@@ -57,7 +57,7 @@ bool GeneralCommandHandler::Init(std::shared_ptr<std::vector<LivoxLidarCfg>>& li
   comm_port_.reset(new CommPort());
    
    // double_lidar
-   host_ip_ = lidars_cfg_ptr_->at(0).host_net_info.cmd_data_ip;
+   host_ip_ = lidars_cfg_ptr->at(0).host_net_info.cmd_data_ip;
 
   for (auto it = lidars_cfg_ptr->begin(); it != lidars_cfg_ptr->end(); ++it) {
     const uint8_t dev_type = it->device_type;
