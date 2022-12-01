@@ -286,6 +286,8 @@ void GeneralCommandHandler::HandleDetectionData(uint32_t handle, uint16_t lidar_
   }
 
   if (!VerifyNetSegment(detection_data)) {
+    LOG_INFO("Detection lidar, NOT THE SAME SEG, RETURN, the handle:{}, lidar_port:{}, HOST:{}",
+        handle, lidar_port, host_ip_.c_str());
     return;
   }
 
