@@ -55,6 +55,10 @@ bool GeneralCommandHandler::Init(const std::string& host_ip, const bool is_view,
 bool GeneralCommandHandler::Init(std::shared_ptr<std::vector<LivoxLidarCfg>>& lidars_cfg_ptr,
     std::shared_ptr<std::vector<LivoxLidarCfg>>& custom_lidars_cfg_ptr, DeviceManager* device_manager) {
   comm_port_.reset(new CommPort());
+   
+   // double_lidar
+   host_ip_ = lidars_cfg_ptr_->at(0).host_net_info.cmd_data_ip;
+
   for (auto it = lidars_cfg_ptr->begin(); it != lidars_cfg_ptr->end(); ++it) {
     const uint8_t dev_type = it->device_type;
     if (lidars_command_handler_.find(dev_type) == lidars_command_handler_.end()) {
@@ -219,7 +223,10 @@ void GeneralCommandHandler::Handler(const uint8_t dev_type, const uint32_t handl
 }
 
 bool GeneralCommandHandler::VerifyNetSegment(const DetectionData* detection_data) {
-  if (is_view_) {
+  // if (false == is_view_) {
+  //   return true;
+  // }
+
     if (host_ip_.empty()) {
       LOG_ERROR("Verify net segment faield, the host ip is empty.");
       return false;
@@ -227,6 +234,7 @@ bool GeneralCommandHandler::VerifyNetSegment(const DetectionData* detection_data
 
     std::vector<uint8_t> host_ip_vec;
     if (!BuildRequest::IpToU8(host_ip_, ".", host_ip_vec)) {
+      LOG_ERROR("invalid host ip fotmat, host_ip_:{}.", host_ip_.c_str());
       return false;
     }
     
@@ -237,15 +245,17 @@ bool GeneralCommandHandler::VerifyNetSegment(const DetectionData* detection_data
           detection_data->lidar_ip[1], detection_data->lidar_ip[2], detection_data->lidar_ip[3]);
       return true;
     }
-    std::string lidar_ip = std::to_string(detection_data->lidar_ip[0]) + "." +
-      std::to_string(detection_data->lidar_ip[1]) + "." +
-      std::to_string(detection_data->lidar_ip[2]) + "." +
-      std::to_string(detection_data->lidar_ip[3]);
-    LOG_ERROR("The host address and lidar address are on different network segments, the host_ip:{}, lidar_ip:{}",
-        host_ip_.c_str(), lidar_ip.c_str());
-    return false;
-  }
-  return true;
+    else
+    {
+      std::string lidar_ip = std::to_string(detection_data->lidar_ip[0]) + "." +
+        std::to_string(detection_data->lidar_ip[1]) + "." +
+        std::to_string(detection_data->lidar_ip[2]) + "." +
+        std::to_string(detection_data->lidar_ip[3]);
+      LOG_ERROR("The host address and lidar address are on different network segments, the host_ip:{}, lidar_ip:{}",
+          host_ip_.c_str(), lidar_ip.c_str());
+      return false;
+    }
+
 }
 
 void GeneralCommandHandler::CreateCommandHandle(const uint8_t dev_type) {
