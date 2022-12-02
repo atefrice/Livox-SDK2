@@ -1,0 +1,6 @@
+model: "HAPTX"
+frame_id: "livox_haptx_front"
+config_path: "/apollo/modules/drivers/lidar/livox/conf/double/front.json"
+imu_channel: "/apollo/sensor/livox/front/Imu"
+pointcloud_channel: "/apollo/sensor/livox/front/PointCloud2"
+
