@@ -1,9 +1,8 @@
 cmake_minimum_required(VERSION 3.0)
 
-set(SDK_LIBRARY livox_lidar_sdk_static)
+set(SDK_LIBRARY livox_lidar_sdk_shared)
 
-
-add_library(${SDK_LIBRARY} STATIC "")
+add_library(${SDK_LIBRARY} SHARED "")
 
 set(LIVOX_SDK_MAJOR_VERSION "2")
 set(LIVOX_SDK_MINOR_VERSION "3")
@@ -31,9 +30,10 @@ else(WIN32)
 endif (WIN32)
 
 target_compile_options(${SDK_LIBRARY}
-        PRIVATE $<$<CXX_COMPILER_ID:GNU>:-Wall>#-Wno-c++11-long-long>
+        PRIVATE $<$<CXX_COMPILER_ID:GNU>:-Wall -Wno-c++11-long-long>
         PRIVATE $<$<CXX_COMPILER_ID:AppleClang>:-Wno-unknown-pragmas -Wall -Werror -Wno-c++11-long-long>
         PRIVATE $<$<CXX_COMPILER_ID:Clang>:-Wno-unknown-pragmas -Wall -Werror -Wno-c++11-long-long>)
+
 
 target_sources(${SDK_LIBRARY}
         PRIVATE
@@ -96,6 +96,12 @@ target_sources(${SDK_LIBRARY}
         src/base/multiple_io/multiple_io_kqueue.cpp
         src/base/wake_up/wake_up_pipe.h
         src/base/wake_up/${PLATFORM}/wake_up_pipe.cpp)
+
+
+install(TARGETS ${SDK_LIBRARY}
+        PUBLIC_HEADER DESTINATION include
+        ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION lib)
 
 
 install(TARGETS ${SDK_LIBRARY}
